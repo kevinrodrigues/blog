@@ -10,7 +10,7 @@ module.exports = {
     siteTitle: `KR's blog`,
     siteTitleAlt: `KR`,
     siteHeadline: `KR`,
-    siteUrl: `http://kevin-rodrigues.co.uk/`,
+    siteUrl: `https://kevin-rodrigues.co.uk/`,
     siteDescription: ``,
     siteLanguage: `en`,
     siteImage: ``,
@@ -38,7 +38,7 @@ module.exports = {
           },
           {
             name: `Website`,
-            url: `http://kevin-rodrigues.co.uk/`,
+            url: `https://kevin-rodrigues.co.uk/`,
           },
         ],
       },
