@@ -1,0 +1,209 @@
+---
+title: Why @use and @forward is so useful?
+date: 2023-08-06
+description: CSS
+tags:
+  - CSS
+  - Import
+  - use
+  - forward
+banner: ./jest.png
+---
+
+![Sass image](./sass.jpeg)
+
+## Introduction
+
+---
+
+If you're a web developer or designer working with Sass (Syntactically Awesome Style Sheets), you've probably heard about the handy features `@use` and `@forward`. Introduced in Sass 3.9, these directives have become a game-changer for organising and managing styles in complex projects. In this blog post, we'll explore why @use and @forward are so useful and provide practical examples to demonstrate their power.
+
+The main aim of adopting a TDD approach is to help enable engineers & testers to optimise code that holds up to resilience long term. Test Driven Development ultimately is the process where you write a test that fails at first, and then write the code that makes this failed test pass. In a way this forces you to think about the implementation details of the code you are about to write.
+
+## Simplify Dependency Management
+
+One of the primary advantages of @use and @forward is their ability to simplify the way you manage dependencies. In traditional Sass, the @import directive could lead to a tangled web of dependencies, resulting in bloated and hard-to-maintain codebases. @use, on the other hand, provides a clear way to import only the specific members (variables, mixins, and functions) you need from other Sass modules.
+
+### Example:
+
+Consider you have a color utilities module (_colors.scss) that defines various color variables, like $primary-color, $secondary-color, etc. Instead of importing the entire module with @import, you can selectively import just the required colors:
+
+```{sass}
+// _colors.scss
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$tertiary-color: #28a745;
+// ...
+
+// main.scss
+@use 'colors' with (
+  $primary-color,
+  $secondary-color
+);
+
+body {
+  background-color: colors.$primary-color;
+  color: colors.$secondary-color;
+}
+```
+
+## Simplify Dependency Management
+
+Modularising your Sass code is crucial for maintainability and reusability. The @use directive encourages this modular approach by creating namespaces for imported members, avoiding naming collisions and making your codebase more organised.
+
+### Example:
+
+Let's say you have a typography module (_typography.scss) with various typography-related mixins and functions. You can use @use to create a namespace for the typography module:
+
+```{sass}
+// _typography.scss
+@mixin heading($size) {
+  font-size: $size;
+  // ...
+}
+
+// main.scss
+@use 'typography' as typography;
+
+h1 {
+  @include typography.heading(24px);
+}
+
+h2 {
+  @include typography.heading(20px);
+}
+
+```
+
+## Facilitate Forwarding
+@forward allows you to expose certain Sass members from one module to another, without having to re-implement them. This feature helps in building robust and composable APIs, making it easier for different parts of your codebase to communicate effectively.
+
+Example:
+
+Consider two separate modules: _buttons.scss and _forms.scss. If the buttons module has a useful mixin called .btn-primary, you can forward it to the forms module using @forward:
+
+```{sass}
+// _buttons.scss
+@mixin btn-primary {
+  // Button styles...
+}
+
+// _forms.scss
+@forward 'buttons' show btn-primary;
+
+// main.scss
+@use 'forms';
+
+.my-form {
+  @include forms.btn-primary;
+}
+```
+
+## Lets get slightly more complex
+
+1. You have a folder structure with separate Sass files for each component (e.g., _navbar.scss, _buttons.scss, _basket.scss, _order.scss, _footer.scss, etc.).
+2. You have a main.scss file that imports and uses these modules.
+
+```{sass}
+// _buttons.scss
+// _colors.scss
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+
+// _buttons.scss
+@mixin btn-primary {
+  background-color: $primary-color;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+// _navbar.scss
+.navbar {
+  background-color: $secondary-color;
+  // ...
+}
+
+// main.scss
+@use 'colors';
+@use 'buttons' as buttons;
+@use 'navbar';
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.navbar {
+  @include buttons.btn-primary;
+}
+
+```
+
+## Encourage Modularisation:
+
+
+```{sass}
+// _typography.scss
+@mixin heading($size) {
+  font-size: $size;
+  // ...
+}
+
+// _basket.scss
+.basket {
+  border: 1px solid $primary-color;
+  // ...
+}
+
+// _order.scss
+.order {
+  background-color: $secondary-color;
+  // ...
+}
+
+// main.scss
+@use 'typography';
+@use 'basket';
+@use 'order';
+
+.basket-name {
+  @include typography.heading(18px);
+}
+
+.order-item {
+  @include typography.heading(16px);
+}
+```
+
+#### Facilitate Forwarding:
+
+```{sass}
+// _forms.scss
+@forward 'buttons' show btn-primary;
+
+// _footer.scss
+@forward 'buttons' as footerButtons show btn-primary;
+
+// main.scss
+@use 'forms';
+@use 'footer';
+
+.my-form {
+  @include forms.btn-primary;
+}
+
+.footer {
+  @include footer.footerButtons;
+}
+```
+## Conclusion:
+
+In this more complex example, we have a comprehensive folder structure for our components, each managed in their respective Sass files. The @use and @forward directives enable us to selectively import the necessary styles and components from different modules, avoiding naming conflicts and keeping the codebase organized.
+
+The color variables defined in _colors.scss are shared across various components, making it easy to maintain a consistent color scheme. The typography styles are separated into their own module, promoting reusability throughout the project.
+
+The @forward directive also allows us to expose mixins from one module to another, enabling the sharing of common styles between different components. For example, the .btn-primary mixin from _buttons.scss is used in both the _forms.scss and _footer.scss modules, eliminating the need for code duplication.
+
+In conclusion, @use and @forward play a vital role in simplifying, modularizing, and reusing styles in more complex Sass projects, ultimately leading to a cleaner and more efficient codebase. As projects grow in size and complexity, harnessing the power of these directives becomes increasingly crucial to maintainable and scalable stylesheets.
